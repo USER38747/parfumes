@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة المشتريات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --text-color: #E0E0E0; --gold: #D4AF37; }
+        body { background: var(--bg-color); color: var(--text-color); margin: 0; font-family: 'Tajawal', sans-serif; }
+        nav { padding: 20px 5%; border-bottom: 1px solid rgba(212, 175, 55, 0.2); display: flex; justify-content: space-between; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); text-decoration: none; }
+        
+        .cart-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .cart-header { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); margin-bottom: 30px; text-align: center; }
+        
+        .cart-item { display: flex; align-items: center; background: var(--card-bg); margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; margin-left: 20px; }
+        .item-info { flex-grow: 1; }
+        .item-name { font-weight: bold; font-size: 1.1rem; }
+        .item-price { color: var(--gold); margin-top: 5px; }
+        
+        .qty-ctrl { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { background: #333; color: #fff; border: none; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; }
+        .remove-btn { color: #ff4d4d; background: none; border: none; cursor: pointer; margin-right: 20px; font-size: 0.9rem; }
+        
+        .summary { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-top: 30px; text-align: left; border: 1px solid var(--gold); }
+        .summary div { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; }
+        .total { font-weight: bold; font-size: 1.3rem; color: var(--gold); border-top: 1px solid #444; padding-top: 10px; }
+        
+        .checkout-btn { display: block; width: 100%; background: var(--gold); color: #000; text-align: center; padding: 15px; text-decoration: none; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        .checkout-btn:hover { background: #b5952f; }
+        
+        .empty-cart { text-align: center; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">ROYAL PERFUMES</a>
+        <a href="products.html" style="color: #fff; text-decoration: none;">متابعة التسوق</a>
+    </nav>
+
+    <div class="cart-container">
+        <h1 class="cart-header">سلة المشتريات</h1>
+        <div id="cartItems"></div>
+        
+        <div class="summary" id="summaryBlock" style="display:none;">
+            <div><span>المجموع الفرعي:</span> <span id="subtotal">0</span></div>
+            <div><span>التوصيل:</span> <span>يُحسب عند الدفع</span></div>
+            <div class="total"><span>الإجمالي التقديري:</span> <span id="total">0</span></div>
+            <a href="checkout.html" class="checkout-btn">إتمام الطلب</a>
+        </div>
+    </div>
+
+    <script>
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('perfumeCart')) || [];
+            const container = document.getElementById('cartItems');
+            const summaryBlock = document.getElementById('summaryBlock');
+            
+            container.innerHTML = '';
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-cart"><h3>السلة فارغة</h3><p>تصفح المنتجات وأضف عطورك المفضلة.</p></div>';
+                summaryBlock.style.display = 'none';
+                return;
+            }
+
+            summaryBlock.style.display = 'block';
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                totalPrice += itemTotal;
+                
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">${item.price.toLocaleString()} د.ج</div>
+                        </div>
+                        <div class="qty-ctrl">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${index})">حذف</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('subtotal').innerText = totalPrice.toLocaleString() + ' د.ج';
+            document.getElementById('total').innerText = totalPrice.toLocaleString() + ' د.ج';
+        }
+
+        function updateQty(index, change) {
+            let cart = JSON.parse(localStorage.getItem('perfumeCart'));
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) cart[index].quantity = 1;
+            localStorage.setItem('perfumeCart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('perfumeCart'));
+            cart.splice(index, 1);
+            localStorage.setItem('perfumeCart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        renderCart();
+    </script>
+</body>
+</html>

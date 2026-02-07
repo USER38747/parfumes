@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج | رويال للعطور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --text-color: #E0E0E0; --gold: #D4AF37; }
+        body { background: var(--bg-color); color: var(--text-color); margin: 0; font-family: 'Tajawal', sans-serif; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); text-decoration: none; }
+        .nav-links a { color: #fff; text-decoration: none; margin-left: 20px; }
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: var(--gold); color: #000; font-size: 12px; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        .container { max-width: 1000px; margin: 50px auto; padding: 0 20px; display: flex; gap: 50px; flex-wrap: wrap; }
+        .product-img { flex: 1; min-width: 300px; }
+        .product-img img { width: 100%; border-radius: 10px; border: 1px solid var(--gold); }
+        .product-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .product-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 20px; }
+        .product-price { font-size: 1.5rem; margin-bottom: 20px; font-weight: bold; }
+        .product-desc { line-height: 1.6; color: #aaa; margin-bottom: 30px; }
+        
+        .actions { display: flex; align-items: center; gap: 20px; }
+        .qty-input { padding: 10px; width: 60px; background: var(--card-bg); border: 1px solid #333; color: #fff; text-align: center; font-size: 1.1rem; }
+        .add-btn { background: var(--gold); color: #000; padding: 12px 30px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .add-btn:hover { background: #b5952f; }
+
+        /* Popup */
+        .toast { visibility: hidden; min-width: 250px; background-color: var(--gold); color: #000; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 1; left: 50%; bottom: 30px; transform: translateX(-50%); }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">ROYAL PERFUMES</a>
+        <div class="nav-links">
+            <a href="index.html">الرئيسية</a>
+            <a href="products.html">المنتجات</a>
+        </div>
+        <div class="cart-icon" onclick="window.location.href='cart.html'">
+            🛒 <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </nav>
+
+    <div class="container" id="detailContainer">
+        </div>
+    <div id="toast" class="toast">تمت الإضافة بنجاح</div>
+
+    <script>
+        // Data duplicate required because of single file constraint (in real app, fetch from JSON)
+        const products = [
+            { id: 1, name: "عود ملكي فاخر", price: 12000, desc: "عطر العود الملكي يتميز بثبات عالي ورائحة فواحة تعكس الفخامة العربية الأصيلة.", img: "https://images.unsplash.com/photo-1594035910387-fea4779426e9?auto=format&fit=crop&w=600&q=80" },
+            { id: 2, name: "زهرة الياسمين", price: 8500, desc: "مزيج رائع من زهور الياسمين والمسك الأبيض، مناسب للمناسبات الخاصة.", img: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80" },
+            { id: 3, name: "بلاك أوبيوم", price: 15000, desc: "عطر غامض وجذاب يجمع بين القهوة السوداء والفانيليا.", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80" },
+            { id: 4, name: "سوفاج إكسير", price: 18000, desc: "تركيز عالي من التوابل والأخشاب، عطر للرجل القوي.", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80" },
+            { id: 5, name: "مسك الطهارة", price: 4500, desc: "رائحة النظافة والانتعاش، مسك أصلي بجودة عالية.", img: "https://images.unsplash.com/photo-1512777576255-a80520ea304d?auto=format&fit=crop&w=600&q=80" },
+            { id: 6, name: "شانيل بلو", price: 16500, desc: "عطر كلاسيكي منعش برائحة الحمضيات والأخشاب.", img: "https://images.unsplash.com/photo-1585232004423-244e0e6904e3?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        // Get ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get('id'));
+        const product = products.find(p => p.id === id);
+
+        if (product) {
+            document.title = `${product.name} | رويال للعطور`;
+            document.getElementById('detailContainer').innerHTML = `
+                <div class="product-img">
+                    <img src="${product.img}" alt="${product.name}">
+                </div>
+                <div class="product-details">
+                    <h1 class="product-title">${product.name}</h1>
+                    <div class="product-price">${product.price.toLocaleString()} د.ج</div>
+                    <p class="product-desc">${product.desc}</p>
+                    <div class="actions">
+                        <input type="number" id="qty" value="1" min="1" class="qty-input">
+                        <button class="add-btn" onclick="addToCart()">أضف إلى السلة</button>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('detailContainer').innerHTML = "<h1>المنتج غير موجود</h1>";
+        }
+
+        function addToCart() {
+            const qty = parseInt(document.getElementById('qty').value);
+            let cart = JSON.parse(localStorage.getItem('perfumeCart')) || [];
+            const existing = cart.find(item => item.id === id);
+
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ ...product, quantity: qty });
+            }
+
+            localStorage.setItem('perfumeCart', JSON.stringify(cart));
+            updateCartCount();
+            
+            const toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('perfumeCart')) || [];
+            document.getElementById('cartCount').textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
+        }
+        updateCartCount();
+    </script>
+</body>
+</html>

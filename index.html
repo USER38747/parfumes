@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رويال للعطور | Royal Perfumes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --text-color: #E0E0E0;
+            --gold: #D4AF37;
+            --gold-hover: #B5952F;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* Loader */
+        #loader { position: fixed; inset: 0; background: var(--bg-color); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
+        .spinner { width: 50px; height: 50px; border: 3px solid rgba(212, 175, 55, 0.3); border-radius: 50%; border-top-color: var(--gold); animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Navbar */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(18, 18, 18, 0.95); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); font-weight: bold; letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a:hover { color: var(--gold); }
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: var(--gold); color: #000; font-size: 12px; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        /* Hero Section */
+        .hero { height: 90vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; color: var(--gold); margin-bottom: 20px; animation: fadeInUp 1s ease; }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; max-width: 600px; animation: fadeInUp 1.2s ease; }
+        .btn { padding: 12px 30px; background: var(--gold); color: #000; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .btn:hover { background: var(--gold-hover); transform: translateY(-3px); }
+
+        /* Categories */
+        .section-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--gold); margin: 60px 0 40px; }
+        .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 0 5%; }
+        .cat-card { height: 300px; position: relative; overflow: hidden; cursor: pointer; border: 1px solid rgba(212, 175, 55, 0.1); }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .cat-card:hover img { transform: scale(1.1); }
+        .cat-info { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; }
+        .cat-info h3 { font-size: 1.8rem; border-bottom: 2px solid var(--gold); padding-bottom: 5px; }
+
+        /* Featured Products */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; padding: 0 5% 60px; }
+        .product-card { background: var(--card-bg); padding: 15px; text-align: center; transition: 0.3s; border: 1px solid transparent; }
+        .product-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        .product-card img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 15px; }
+        .product-name { font-size: 1.1rem; margin-bottom: 5px; }
+        .product-price { color: var(--gold); font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
+
+        /* Footer */
+        footer { background: #000; padding: 40px 5%; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.2); margin-top: auto; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .nav-links { display: none; } /* Mobile Menu omitted for brevity */ }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><div class="spinner"></div></div>
+
+    <nav>
+        <div class="logo">ROYAL PERFUMES</div>
+        <ul class="nav-links">
+            <li><a href="index.html" style="color:var(--gold)">الرئيسية</a></li>
+            <li><a href="products.html">المنتجات</a></li>
+            <li><a href="cart.html">السلة</a></li>
+        </ul>
+        <div class="cart-icon" onclick="window.location.href='cart.html'">
+            🛒 <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>فخامة العطور بين يديك</h1>
+        <p>اكتشف مجموعتنا الحصرية من العطور النادرة والمصممة لتناسب ذوقك الرفيع.</p>
+        <button class="btn" onclick="window.location.href='products.html'">تسوق الآن</button>
+    </section>
+
+    <h2 class="section-title">التصنيفات</h2>
+    <div class="categories">
+        <div class="cat-card" onclick="location.href='products.html?cat=Men'">
+            
+            <img src="https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=500&q=60" alt="عطور رجالية">
+            <div class="cat-info"><h3>عطور رجالية</h3></div>
+        </div>
+        <div class="cat-card" onclick="location.href='products.html?cat=Women'">
+            
+            <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=500&q=60" alt="عطور نسائية">
+            <div class="cat-info"><h3>عطور نسائية</h3></div>
+        </div>
+        <div class="cat-card" onclick="location.href='products.html?cat=Luxury'">
+            
+            <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=500&q=60" alt="عطور فاخرة">
+            <div class="cat-info"><h3>عطور فاخرة</h3></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Royal Perfumes. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        // Loader Logic
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+            updateCartCount();
+        });
+
+        // Cart Count Logic
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('perfumeCart')) || [];
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+    </script>
+</body>
+</html>
